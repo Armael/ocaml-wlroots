@@ -104,6 +104,10 @@ struct
 
   let wl_resource_p = ptr Wl_resource.t
 
+  (* wl_output_transform *)
+
+  let wl_output_transform = Wl_output_transform.t
+
   (* wlr_output_mode *)
 
   let wlr_output_mode_p = ptr Output_mode.t
@@ -130,6 +134,17 @@ struct
   let wlr_output_enable = foreign "wlr_output_enable"
       (wlr_output_p @-> bool @-> returning void)
 
+  let wlr_output_effective_resolution = foreign "wlr_output_effective_resolution"
+      (wlr_output_p @-> ptr int @-> ptr int @-> returning void)
+
+  let wlr_output_transform_invert = foreign "wlr_output_transform_invert"
+      (wl_output_transform @-> returning wl_output_transform)
+
+  let wlr_output_render_software_cursors = foreign "wlr_output_render_software_cursors"
+      (* FIXME: The void pointer is a pixman_region32_t for which no bindings exist (yet).
+         This is only ok because so far, no one uses it. *)
+      (wlr_output_p @-> ptr void @-> returning void)
+
   (* wlr_output_layout *)
 
   let wlr_output_layout_p = ptr Output_layout.t
@@ -139,6 +154,9 @@ struct
 
   let wlr_output_layout_add_auto = foreign "wlr_output_layout_add_auto"
       (wlr_output_layout_p @-> wlr_output_p @-> returning void)
+
+  let wlr_output_layout_output_coords = foreign "wlr_output_layout_output_coords"
+      (wlr_output_layout_p @-> wlr_output_p @-> ptr double @-> ptr double @-> returning void)
 
   (* wlr_box *)
 
@@ -169,6 +187,9 @@ struct
   let wlr_surface_send_frame_done = foreign "wlr_surface_send_frame_done"
       (wlr_surface_p @-> time @-> returning void)
 
+  let wlr_surface_get_texture = foreign "wlr_surface_get_texture"
+      (wlr_surface_p @-> returning wlr_texture_p)
+
   (* wlr_renderer *)
 
   let wlr_renderer_p = ptr Renderer.t
@@ -185,12 +206,23 @@ struct
   let wlr_renderer_init_wl_display = foreign "wlr_renderer_init_wl_display"
       (wlr_renderer_p @-> wl_display_p @-> returning bool)
 
+  let wlr_render_texture_with_matrix = foreign "wlr_render_texture_with_matrix"
+      (wlr_renderer_p @-> wlr_texture_p @-> ptr double @-> double @-> returning bool)
+
   (* wlr_keyboard *)
 
   let wlr_keyboard_p = ptr Keyboard.t
 
   let wlr_keyboard_set_keymap = foreign "wlr_keyboard_set_keymap"
       (wlr_keyboard_p @-> Xkbcommon.Keymap.t @-> returning bool)
+
+  let wlr_keyboard_modifiers_p = ptr Keyboard_modifiers.t
+
+  let wlr_keyboard_set_repeat_info = foreign "wlr_keyboard_set_repeat_info"
+      (wlr_keyboard_p @-> int32_t @-> int32_t @-> returning void)
+
+  let wlr_keyboard_get_modifiers = foreign "wlr_keyboard_get_modifiers"
+      (wlr_keyboard_p @-> returning uint32_t)
 
   (* wlr_backend *)
 
@@ -229,6 +261,33 @@ struct
   let wlr_xdg_shell_create = foreign "wlr_xdg_shell_create"
       (wl_display_p @-> returning wlr_xdg_shell_p)
 
+  (* wlr_xdg_surface *)
+
+  let wlr_xdg_surface_p = ptr Xdg_surface.t
+
+  let wlr_surface_is_xdg_surface = foreign "wlr_surface_is_xdg_surface"
+      (wlr_surface_p @-> returning bool)
+
+  let wlr_xdg_surface_from_wlr_surface = foreign "wlr_xdg_surface_from_wlr_surface"
+      (wlr_surface_p @-> returning wlr_xdg_surface_p)
+
+  let wlr_xdg_surface_get_geometry = foreign "wlr_xdg_surface_get_geometry"
+      (wlr_xdg_surface_p @-> wlr_box_p @-> returning void)
+
+  let wlr_xdg_surface_surface_at = foreign "wlr_xdg_surface_surface_at"
+      (wlr_xdg_surface_p @-> double @-> double @-> ptr double @-> ptr double @-> returning wlr_surface_p)
+
+  let wlr_xdg_surface_for_each_surface = foreign "wlr_xdg_surface_for_each_surface"
+      (wlr_xdg_surface_p @-> Surface.wlr_surface_iterator_func_t @-> ptr void @-> returning void)
+
+  (* wlr_xdg_toplevel *)
+
+  let wlr_xdg_toplevel_set_activated = foreign "wlr_xdg_toplevel_set_activated"
+      (wlr_xdg_surface_p @-> bool @-> returning uint32_t)
+
+  let wlr_xdg_toplevel_set_size = foreign "wlr_xdg_toplevel_set_size"
+      (wlr_xdg_surface_p @-> int @-> int @-> returning uint32_t)
+
   (* wlr_input_device *)
 
   let wlr_input_device_p = ptr Input_device.t
@@ -252,6 +311,13 @@ struct
     foreign "wlr_cursor_set_surface"
       (wlr_cursor_p @-> wlr_surface_p @-> int @-> int @-> returning void)
 
+  let wlr_cursor_move =
+    foreign "wlr_cursor_move"
+      (wlr_cursor_p @-> wlr_input_device_p @-> double @-> double @-> returning void)
+
+  let wlr_cursor_warp_absolute = foreign "wlr_cursor_warp_absolute"
+      (wlr_cursor_p @-> wlr_input_device_p @-> double @-> double @-> returning void)
+
   (* wlr_xcursor_manager *)
 
   let wlr_xcursor_manager_p = ptr Xcursor_manager.t
@@ -262,6 +328,9 @@ struct
   let wlr_xcursor_manager_load = foreign "wlr_xcursor_manager_load"
       (wlr_xcursor_manager_p @-> float @-> returning int)
 
+  let wlr_xcursor_manager_set_cursor_image = foreign "wlr_xcursor_manager_set_cursor_image"
+      (wlr_xcursor_manager_p @-> string @-> wlr_cursor_p @-> returning void)
+
   (* wlr_seat *)
 
   let wlr_seat_p = ptr Seat.t
@@ -271,6 +340,47 @@ struct
 
   let wlr_seat_set_capabilities = foreign "wlr_seat_set_capabilities"
       (wlr_seat_p @-> Wl_seat_capability.t @-> returning void)
+
+  let wlr_seat_set_keyboard = foreign "wlr_seat_set_keyboard"
+      (wlr_seat_p @-> wlr_input_device_p @-> returning void)
+
+  let wlr_seat_keyboard_notify_modifiers = foreign "wlr_seat_keyboard_notify_modifiers"
+      (wlr_seat_p @-> wlr_keyboard_modifiers_p @-> returning void)
+
+  let wlr_seat_keyboard_notify_enter = foreign "wlr_seat_keyboard_notify_enter"
+      (wlr_seat_p
+       @-> wlr_surface_p
+       @-> Keycodes.t
+       @-> size_t
+       @-> wlr_keyboard_modifiers_p
+       @-> returning void)
+
+  let wlr_seat_keyboard_notify_key = foreign "wlr_seat_keyboard_notify_key"
+      (wlr_seat_p @-> uint32_t @-> uint32_t @-> uint32_t @-> returning void)
+
+  let wlr_seat_pointer_notify_enter = foreign "wlr_seat_pointer_notify_enter"
+      (wlr_seat_p @-> wlr_surface_p @-> double @-> double @-> returning void)
+
+  let wlr_seat_pointer_clear_focus = foreign "wlr_seat_pointer_clear_focus"
+      (wlr_seat_p @-> returning void)
+
+  let wlr_seat_pointer_notify_motion = foreign "wlr_seat_pointer_notify_motion"
+      (wlr_seat_p @-> uint32_t @-> double @-> double @-> returning void)
+
+  let wlr_seat_pointer_notify_button = foreign "wlr_seat_pointer_notify_button"
+      (wlr_seat_p @-> uint32_t @-> uint32_t @-> Button_state.t @-> returning uint32_t)
+
+  let wlr_seat_pointer_notify_axis = foreign "wlr_seat_pointer_notify_axis"
+      (wlr_seat_p
+       @-> uint32_t
+       @-> Axis_orientation.t
+       @-> double
+       @-> int32_t
+       @-> Axis_source.t
+       @-> returning void)
+
+  let wlr_seat_pointer_notify_frame = foreign "wlr_seat_pointer_notify_frame"
+      (wlr_seat_p @-> returning void)
 
   (* wlr_log *)
 

@@ -18,3 +18,6 @@ let clear (renderer : t) ((c1,c2,c3,c4) : float * float * float * float) =
   Bindings.wlr_renderer_clear renderer (CArray.start color_arr)
 
 let init_wl_display = Bindings.wlr_renderer_init_wl_display
+
+let render_texture_with_matrix renderer texture matrix alpha =
+  Bindings.wlr_render_texture_with_matrix renderer texture matrix alpha

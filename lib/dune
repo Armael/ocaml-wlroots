@@ -14,10 +14,37 @@
   (public_name wlroots)
   (modules wlroots
            generated_ffi
-           wl log texture surface box matrix output
-           keyboard pointer touch tablet_tool tablet_pad input_device
-           backend renderer data_device compositor xdg_shell cursor
-           xcursor_manager seat output_layout)
+           wl
+           log
+           texture
+           surface
+           box
+           matrix
+           output
+           keyboard
+           pointer
+           event_pointer_button
+           event_pointer_motion
+           event_pointer_motion_absolute
+           event_pointer_axis
+           edges
+           touch
+           tablet_tool
+           tablet_pad
+           input_device
+           keyboard_modifiers
+           keycodes
+           backend
+           renderer
+           data_device
+           compositor
+           xdg_shell
+           xdg_surface
+           xdg_toplevel
+           cursor
+           xcursor_manager
+           seat
+           output_layout)
   (c_names generated_ffi_stubs)
   (c_flags (:standard -Werror -pedantic -Wall -Wunused -DWLR_USE_UNSTABLE -O0) -w
            (:include ../config/wlroots-ccopt.sexp)

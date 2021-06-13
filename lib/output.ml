@@ -53,3 +53,18 @@ let commit (output : t): bool =
   Bindings.wlr_output_commit output
 
 let enable = Bindings.wlr_output_enable
+
+let scale = getfield Types.Output.scale
+
+let effective_resolution (output: t) : int * int =
+  let width = allocate int 0 in
+  let height = allocate int 0 in
+  Bindings.wlr_output_effective_resolution output width height;
+  (!@ width, !@ height)
+
+type transform = Types.Wl_output_transform.transform
+
+let transform_invert = Bindings.wlr_output_transform_invert
+
+let render_software_cursors output =
+  Bindings.wlr_output_render_software_cursors output null

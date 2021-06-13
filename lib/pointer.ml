@@ -7,26 +7,8 @@ module Types = Wlroots_ffi_f.Ffi.Types
 type t = Types.Pointer.t ptr
 include Ptr
 
-module Event_motion = struct
-  type t = Types.Event_pointer_motion.t ptr
-  let t = ptr Types.Event_pointer_motion.t
-  include Ptr
-end
+type button_state = Types.Button_state.t = Released | Pressed
 
-module Event_motion_absolute = struct
-  type t = Types.Event_pointer_motion_absolute.t ptr
-  let t = ptr Types.Event_pointer_motion_absolute.t
-  include Ptr
-end
+type axis_source = Types.Axis_source.t = Wheel | Finger | Continuous | Wheel_tilt
 
-module Event_button = struct
-  type t = Types.Event_pointer_button.t ptr
-  let t = ptr Types.Event_pointer_button.t
-  include Ptr
-end
-
-module Event_axis = struct
-  type t = Types.Event_pointer_axis.t ptr
-  let t = ptr Types.Event_pointer_axis.t
-  include Ptr
-end
+type axis_orientation = Types.Axis_orientation.t = Vertical | Horizontal

@@ -23,3 +23,9 @@ let current = getfield Types.Surface.current
 let pending = getfield Types.Surface.pending
 
 let send_frame_done = Bindings.wlr_surface_send_frame_done
+
+let get_texture surf =
+  let t = Bindings.wlr_surface_get_texture surf in
+  if is_null t
+  then None
+  else Some t

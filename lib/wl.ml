@@ -115,11 +115,6 @@ module Resource = struct
   include Ptr
 end
 
-module Output_transform = struct
-  type t = Types.Wl_output_transform.t
-  include Poly
-end
-
 module Seat_capability = struct
   type cap = Pointer | Keyboard | Touch
   type t = cap list
